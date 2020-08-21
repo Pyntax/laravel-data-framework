@@ -1,0 +1,19 @@
+{
+    "name": "pyntaxinc/data-framework",
+    "authors": [
+        {
+            "name": "Sahil Sharma",
+            "email": "SahilDude89ss@gmail.com"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "eloquent/enumeration": "^6.0",
+        "laravel/framework": "^7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pyntax\\": "src/"
+        }
+    }
+}
