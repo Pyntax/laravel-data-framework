@@ -46,6 +46,7 @@ class ResourceOwnedByUserManager extends ResourceManager implements ResourceMana
     public function setResourceOwnerId($resourceOwnerId)
     {
         $this->resourceOwnerId = $resourceOwnerId;
+        $this->crudService->setOwnedByFieldValue($resourceOwnerId);
     }
 
     /**
