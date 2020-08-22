@@ -62,7 +62,7 @@ class EloquentRepository extends AbstractRepository
             $klass->skip(($page - 1) * $pageSize);
         }
 
-        return $klass->take($pageSize)->paginate();
+        return $klass->paginate($pageSize, ['*'], 'pageNumber');
     }
 
     /**
