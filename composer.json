@@ -9,7 +9,7 @@
     "license": "MIT",
     "require": {
         "eloquent/enumeration": "^6.0",
-        "laravel/framework": "^7"
+        "laravel/framework": "^7|^v8"
     },
     "autoload": {
         "psr-4": {
