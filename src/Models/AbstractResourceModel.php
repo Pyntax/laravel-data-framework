@@ -26,6 +26,32 @@ abstract class AbstractResourceModel extends Model implements ResourceModelInter
     protected $ownedByAccountField = 'user_id';
 
     /**
+     * @var string
+     */
+    protected $userModel = 'App\Models\User';
+
+    /**
+     * @var string
+     */
+    protected $userModelForeignKey = 'user_id';
+
+    /**
+     * @param string $userModelForeignKey
+     */
+    public function setUserModelForeignKey(string $userModelForeignKey): void
+    {
+        $this->userModelForeignKey = $userModelForeignKey;
+    }
+
+    /**
+     * @param string $userModel
+     */
+    public function setUserModel(string $userModel): void
+    {
+        $this->userModel = $userModel;
+    }
+
+    /**
      * @return bool
      */
     public function isOwnedByAccount(): bool
@@ -54,6 +80,6 @@ abstract class AbstractResourceModel extends Model implements ResourceModelInter
      */
     public function user()
     {
-        return $this->belongsTo('App\User', 'user_id', 'id');
+        return $this->belongsTo($this->userModel, $this->userModelForeignKey, 'id');
     }
 }

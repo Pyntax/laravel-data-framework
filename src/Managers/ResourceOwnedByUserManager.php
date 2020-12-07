@@ -99,6 +99,10 @@ class ResourceOwnedByUserManager extends ResourceManager implements ResourceMana
             [$this->crudService->getOwnedByFieldName() => $this->resourceOwnerId]
         );
 
+        if (!empty($additionalData)) {
+            $conditions = array_merge($additionalData, $conditions);
+        }
+
         $records = $this->crudService->read($conditions, 1);
 
         if (count($records) > 0) {
