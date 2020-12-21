@@ -31,6 +31,13 @@ class EloquentRepository extends AbstractRepository
     }
 
     /**
+     * @return mixed
+     */
+    public function buildNewQuery() {
+        return $this->getBaseModel()->newQuery();
+    }
+
+    /**
      * @param  array  $conditions
      * @param  int  $pageSize
      * @param  int  $page
@@ -49,14 +56,27 @@ class EloquentRepository extends AbstractRepository
                 $cleanedConditions[$key] = $value;
             }
         }
+
         /**
          * @var Model
          */
-        $klass = $this->getBaseModel()->newQuery()->where($cleanedConditions);
+        $klass = $this->buildNewQuery()->where($cleanedConditions);
+
         foreach ($inConditions as $key => $value) {
             $klass->whereIn($key, $value);
         }
 
+        return $this->paginateResponse($klass, $pageSize, $page);
+    }
+
+    /**
+     * @param $klass
+     * @param int $pageSize
+     * @param int $page
+     *
+     * @return mixed
+     */
+    public function paginateResponse($klass, $pageSize = 20, $page = 1) {
         $klass->orderBy($this->getBaseModel()->getPrimaryKey(), 'desc');
         if (($page - 1) > 0) {
             $klass->skip(($page - 1) * $pageSize);
@@ -79,6 +99,7 @@ class EloquentRepository extends AbstractRepository
             1,
             1
         )->first();
+
         $model->fill($fieldsData);
 
         if ($model->isDirty()) {

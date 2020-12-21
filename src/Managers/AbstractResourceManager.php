@@ -37,6 +37,11 @@ abstract class AbstractResourceManager implements ResourceManagerInterface
     protected $resourceFactory;
 
     /**
+     * @var bool
+     */
+    protected $renderResource = true;
+
+    /**
      * AbstractResourceManager constructor.
      *
      * @param  ResourceCRUDServiceInterface  $crudService
@@ -54,5 +59,23 @@ abstract class AbstractResourceManager implements ResourceManagerInterface
         $this->validatorFactory = $validatorFactory;
         $this->resource         = $resource;
         $this->resourceFactory  = $resourceFactory;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldRenderResource(): bool
+    {
+        return $this->renderResource;
+    }
+
+    /**
+     * @param bool $renderResource
+     * @return AbstractResourceManager
+     */
+    public function setRenderResource(bool $renderResource): AbstractResourceManager
+    {
+        $this->renderResource = $renderResource;
+        return $this;
     }
 }

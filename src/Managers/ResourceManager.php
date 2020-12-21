@@ -17,12 +17,16 @@ class ResourceManager extends AbstractResourceManager
 {
     /**
      * @param $resourceData
-     * @param  bool  $isCollection
+     * @param bool $isCollection
      *
      * @return mixed|null
      */
     protected function renderResource($resourceData, $isCollection = false)
     {
+        if (!$this->shouldRenderResource()) {
+            return $resourceData;
+        }
+
         return $this->resourceFactory->create(
             $this->resource,
             $resourceData,
@@ -31,7 +35,7 @@ class ResourceManager extends AbstractResourceManager
     }
 
     /**
-     * @param  array  $newData
+     * @param array $newData
      *
      * @return \Illuminate\Http\JsonResponse|ResourceModelInterface
      * @throws \Exception
@@ -62,8 +66,8 @@ class ResourceManager extends AbstractResourceManager
     }
 
     /**
-     * @param  int  $resourceId
-     * @param  array  $newData
+     * @param int $resourceId
+     * @param array $newData
      *
      * @return mixed|ResourceModelInterface
      */
@@ -74,9 +78,9 @@ class ResourceManager extends AbstractResourceManager
 
     /**
      * @param $keyword
-     * @param  array  $conditions
-     * @param  int  $pageSize
-     * @param  int  $page
+     * @param array $conditions
+     * @param int $pageSize
+     * @param int $page
      *
      * @return mixed|null
      */
@@ -88,9 +92,9 @@ class ResourceManager extends AbstractResourceManager
     }
 
     /**
-     * @param  array  $conditions
-     * @param  int  $pageSize
-     * @param  int  $page
+     * @param array $conditions
+     * @param int $pageSize
+     * @param int $page
      *
      * @return Collection
      */
@@ -102,15 +106,15 @@ class ResourceManager extends AbstractResourceManager
     }
 
     /**
-     * @param  int  $resourceId
-     * @param  array  $additionalData
+     * @param int $resourceId
+     * @param array $additionalData
      *
      * @return mixed|null
      */
     public function findById(int $resourceId, array $additionalData = [])
     {
         $conditions = ['id' => $resourceId];
-        $records    = $this->crudService->read($conditions, 1);
+        $records = $this->crudService->read($conditions, 1);
 
         if (count($records) > 0) {
             return $this->renderResource($records[0]);
@@ -120,7 +124,7 @@ class ResourceManager extends AbstractResourceManager
     }
 
     /**
-     * @param  int  $resourceId
+     * @param int $resourceId
      *
      * @return bool
      */
