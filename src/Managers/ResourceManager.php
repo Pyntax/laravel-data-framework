@@ -73,7 +73,28 @@ class ResourceManager extends AbstractResourceManager
      */
     public function update(int $resourceId, array $newData)
     {
-        return $this->crudService->update($resourceId, $newData);
+        DB::beginTransaction();
+
+        $validator = $this->validatorFactory->make($this->resource, $newData);
+
+        try {
+            if (!empty($validator)) {
+                $validator->validate();
+            }
+
+            $updatedRecord = $this->crudService->update($resourceId, $newData);
+            DB::commit();
+
+            return $this->renderResource($updatedRecord);
+        } catch (ValidationException $validationException) {
+            DB::rollBack();
+
+            throw $validationException;
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            throw $exception;
+        }
+
     }
 
     /**
