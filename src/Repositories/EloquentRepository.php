@@ -14,7 +14,7 @@ use Pyntax\Contracts\Models\ResourceModelInterface;
 class EloquentRepository extends AbstractRepository
 {
     /**
-     * @param  array  $fieldsData
+     * @param array $fieldsData
      * @return ResourceModelInterface|void
      */
     public function create(array $fieldsData)
@@ -33,14 +33,15 @@ class EloquentRepository extends AbstractRepository
     /**
      * @return mixed
      */
-    public function buildNewQuery() {
+    public function buildNewQuery()
+    {
         return $this->getBaseModel()->newQuery();
     }
 
     /**
-     * @param  array  $conditions
-     * @param  int  $pageSize
-     * @param  int  $page
+     * @param array $conditions
+     * @param int $pageSize
+     * @param int $page
      *
      * @return array|ResourceModelInterface
      */
@@ -48,10 +49,20 @@ class EloquentRepository extends AbstractRepository
     {
         $cleanedConditions = [];
         $inConditions = [];
+        $structuredQueries = [];
 
         foreach ($conditions as $key => $value) {
             if (is_array($value)) {
-                $inConditions[$key] = $value;
+                if (array_key_exists('structured_query', $value)) {
+                    $structuredQuery = $value['structured_query'];
+                    if (!empty($structuredQuery['joiningExpression'])
+                        && !empty($structuredQuery['values'])) {
+                        $structuredQueries[$structuredQuery['joiningExpression']][$key] =
+                            $structuredQuery['values'];
+                    }
+                } else {
+                    $inConditions[$key] = $value;
+                }
             } else {
                 $cleanedConditions[$key] = $value;
             }
@@ -62,8 +73,26 @@ class EloquentRepository extends AbstractRepository
          */
         $klass = $this->buildNewQuery()->where($cleanedConditions);
 
+        // Adding inConditions
         foreach ($inConditions as $key => $value) {
             $klass->whereIn($key, $value);
+        }
+
+        // Adding or conditions
+        foreach ($structuredQueries as $key => $value) {
+            switch ($key) {
+                case "or":
+                    foreach ($value as $orField => $orValues) {
+                        $klass->where(function ($query) use ($orField, $orValues) {
+                            Log::info("Adding or Condition on ${orField}");
+                            foreach ($orValues as $orValue) {
+                                Log::info("Adding or Condition with" . print_r($orValue, true));
+                                $query->orWhere($orField, $orValue);
+                            }
+                        });
+                    }
+                    break;
+            }
         }
 
         return $this->paginateResponse($klass, $pageSize, $page);
@@ -76,7 +105,8 @@ class EloquentRepository extends AbstractRepository
      *
      * @return mixed
      */
-    public function paginateResponse($klass, $pageSize = 20, $page = 1) {
+    public function paginateResponse($klass, $pageSize = 20, $page = 1)
+    {
         $klass->orderBy($this->getBaseModel()->getPrimaryKey(), 'desc');
         if (($page - 1) > 0) {
             $klass->skip(($page - 1) * $pageSize);
@@ -86,8 +116,8 @@ class EloquentRepository extends AbstractRepository
     }
 
     /**
-     * @param  int  $id
-     * @param  array  $fieldsData
+     * @param int $id
+     * @param array $fieldsData
      * @return ResourceModelInterface
      */
     public function update(int $id, array $fieldsData)
@@ -110,7 +140,7 @@ class EloquentRepository extends AbstractRepository
     }
 
     /**
-     * @param  array  $conditions
+     * @param array $conditions
      * @return bool
      */
     public function delete(array $conditions)
