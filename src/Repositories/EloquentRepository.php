@@ -84,9 +84,7 @@ class EloquentRepository extends AbstractRepository
                 case "or":
                     foreach ($value as $orField => $orValues) {
                         $klass->where(function ($query) use ($orField, $orValues) {
-                            Log::info("Adding or Condition on ${orField}");
                             foreach ($orValues as $orValue) {
-                                Log::info("Adding or Condition with" . print_r($orValue, true));
                                 $query->orWhere($orField, $orValue);
                             }
                         });

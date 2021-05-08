@@ -24,7 +24,7 @@ trait DateUtils
         try {
             return \DateTime::createFromFormat($fromFormat, $value)->format($format);
         } catch (\Exception $exception) {
-            Log::error("Failed to parse date $value. Error: ".$exception->getMessage());
+            throw $exception;
         }
 
         return null;
