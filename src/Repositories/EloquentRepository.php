@@ -19,6 +19,11 @@ class EloquentRepository extends AbstractRepository
      */
     public function create(array $fieldsData)
     {
+        // If we are creating a new entity and the ID is -1, we should delete it.
+        if (!empty($fieldsData['id']) && $fieldsData['id'] === -1) {
+            unset($fieldsData['id']);
+        }
+
         /**
          * @var $newObject AbstractResourceModel
          */
