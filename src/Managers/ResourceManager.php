@@ -75,13 +75,7 @@ class ResourceManager extends AbstractResourceManager
     {
         DB::beginTransaction();
 
-        $validator = $this->validatorFactory->make($this->resource, $newData);
-
         try {
-            if (!empty($validator)) {
-                $validator->validate();
-            }
-
             $updatedRecord = $this->crudService->update($resourceId, $newData);
             DB::commit();
 
@@ -94,7 +88,6 @@ class ResourceManager extends AbstractResourceManager
             DB::rollBack();
             throw $exception;
         }
-
     }
 
     /**
