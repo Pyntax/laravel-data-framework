@@ -148,17 +148,12 @@ class EloquentRepository extends AbstractRepository
      */
     public function delete(array $conditions)
     {
-        $primaryKeyId = $conditions[$this->getBaseModel()->getPrimaryKey()] ?? null;
-        if (!empty($primaryKeyId)) {
-            $model = $this->read(
-                [
-                    $this->getBaseModel()->getPrimaryKey() => $conditions[$this->getBaseModel()->getPrimaryKey()],
-                ]
-            );
+        $model = $this->read($conditions);
 
-            return $model->delete();
+        if (!empty($model) && !empty($model->first())) {
+            return $model->first()->deleteOrFail();
         }
 
-        return false;
+        throw new \Exception("Unable to delete, entity not found");
     }
 }
